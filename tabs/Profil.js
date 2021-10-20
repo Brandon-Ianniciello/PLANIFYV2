@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, View, Text, Image, TextInput, TouchableOpacity } from "react-native";
+import React, { useContext, useState, useEffect } from 'react';
+import { SafeAreaView, ScrollView, StyleSheet, View, Text, Image, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
 import Header from "../components/Header";
 import { AuthContext } from '../navigation/AuthProvider';
 import FormButton from '../components/FormButton';
@@ -8,11 +8,34 @@ import { useTheme } from 'react-native-paper';
 import Feather from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import * as firebase from 'firebase';
+
 const url = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
 const Profil = () => {
     const { user, logout } = useContext(AuthContext);
     const { colors } = useTheme();
+
+    const [userInfo, setUserInfo] = useState()
+
+    const getUserInfo = () => {
+        const db = firebase.firestore();
+
+        const ref = db.collection("users").doc(user.uid);
+
+        ref.get().then((doc) => {
+            setUserInfo(doc.data())
+        })
+
+        console.log(userInfo)
+    }
+
+
+    useEffect(() => {
+        setUserInfo(null)
+        getUserInfo()
+    }, []);
+
     return (
         <SafeAreaView style={styles.container}>
             <Header title='Profile' />
@@ -29,10 +52,11 @@ const Profil = () => {
                         </TouchableOpacity>
                     </View>
                 </View>
+
                 <View style={styles.action}>
                     <FontAwesome name="user-o" color={colors.text} size={20} />
                     <TextInput
-                        placeholder="First Name"
+                        placeholder={"à remplacer par le nom wesh"}
                         placeholderTextColor="#666666"
                         autoCorrect={false}
                         style={[
@@ -43,6 +67,7 @@ const Profil = () => {
                         ]}
                     />
                 </View>
+                
                 <View style={styles.action}>
                     <FontAwesome name="user-o" color={colors.text} size={20} />
                     <TextInput
@@ -162,8 +187,8 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#dadada',
         paddingBottom: 5,
-        paddingLeft:10,
-        paddingRight:10
+        paddingLeft: 10,
+        paddingRight: 10
     },
     textInput: {
         flex: 1,
@@ -182,12 +207,12 @@ const styles = StyleSheet.create({
         fontSize: 17,
         fontWeight: 'bold',
         color: 'white',
-        textAlign:'center'
+        textAlign: 'center'
     },
-    logoutButton:{
-        backgroundColor:'red',
-        width:70,
-        borderRadius:10,
-        marginLeft:170,
+    logoutButton: {
+        backgroundColor: 'red',
+        width: 70,
+        borderRadius: 10,
+        marginLeft: 170,
     }
 })
